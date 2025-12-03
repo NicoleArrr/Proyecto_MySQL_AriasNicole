@@ -1,63 +1,60 @@
+--Creacción de la db--
+DROP DATABASE IF EXISTS Don_Piccolo;
 CREATE DATABASE IF NOT EXISTS Don_Piccolo;
 USE Don_Piccolo;
 
-DROP TABLE Persona;
-CREATE TABLE Persona (
+--Creación de tablas--
+CREATE TABLE IF NOT EXISTS Persona(
 id_persona int not null primary key auto_increment,
 nombre_completo varchar(50) not null,
 correo_electronico varchar(50),
 direccion varchar(50) not null,
 telefono varchar(50) not null);
 
-DROP TABLE Cliente;
-CREATE TABLE Cliente(
+CREATE TABLE IF NOT EXISTS Cliente(
 id_cliente int not null primary key auto_increment,
 id_persona int not null,
-foreign key (id_persona) references persona (id_persona));
+foreign key (id_persona) references Persona(id_persona));
 
-DROP TABLE Empleado;
-CREATE TABLE Empleado(
+CREATE TABLE IF NOT EXISTS Empleado(
 id_empleado int not null primary key auto_increment,
 id_persona int not null,
-cargo enum('vendedor','cajero','cocina','aseo'));
+cargo enum('vendedor','cajero','cocina','aseo'),
+foreign key (id_persona) references Persona(id_persona));
 
-DROP TABLE Pedido;
-CREATE TABLE Pedido(
+CREATE TABLE IF NOT EXISTS Pedido(
 id_pedido int not null primary key auto_increment,
 id_cliente int not null,
 id_empleado int not null,
-id_pago int not null,
 fecha datetime,
 entrega enum ('tienda', 'domicilio'),
-estado enum ('',''),
+estado enum ('pendiente','en proceso','rechazado'),
 foreign key (id_cliente) references Cliente(id_cliente),
-foreign key (id_empleado) references Vendedor(id_empleado));
+foreign key (id_empleado) references Empleado(id_empleado));
 
- DROP TABLE Pago;
- CREATE TABLE Pago(
+ CREATE TABLE IF NOT EXISTS Pago(
  id_pago int not null primary key auto_increment,
  id_pedido int not null,
- metodo_pago enum ('efectivo','tarjeta_credito'),
+ metodo_pago enum ('efectivo','tarjeta','app'),
  fecha timestamp,
- estado enum ('',''),
- total_pago double not null);
+ estado enum ('en curso','cancelado'),
+ total_pago double not null,
+ foreign key (id_pedido) references Pedido(id_pedido));
 
-DROP TABLE Repartidor;
-CREATE TABLE Repartidor(
+CREATE TABLE IF NOT EXISTS Repartidor(
 id_repartidor int not null auto_increment primary key,
 id_persona int not null,
 zona varchar(50)not null,
+disponibilidad enum ('NO','SI'),
 foreign key (id_persona) references Persona(id_persona));
 
-DROP TABLE Zona
-CREATE TABLE Zona(
+CREATE TABLE IF NOT EXISTS Zona(
 id_zona int not null primary key auto_increment,
 id_repartidor int not null,
 foreign key (id_repartidor) references Repartidor(id_repartidor));
 
-DROP TABLE Domicilio;
-CREATE TABLE Domicilio(
-id_domicilio in not null primary key auto_increment,
+CREATE TABLE IF NOT EXISTS Domicilio(
+id_domicilio int not null primary key auto_increment,
 id_repartidor int not null,
 id_pedido int not null,
 costo double not null,
@@ -65,28 +62,26 @@ fecha timestamp,
 foreign key (id_repartidor) references Repartidor(id_repartidor),
 foreign key (id_pedido) references Pedido(id_pedido));
 
-DROP TABLE Ingrediente;
-CREATE TABLE Ingrediente (
+CREATE TABLE IF NOT EXISTS Ingrediente (
 id_ingrediente int not null primary key auto_increment,
 ingrediente varchar(50),
 cantidad int);
 
-DROP TABLE Producto;
-CREATE TABLE Producto(
+CREATE TABLE IF NOT EXISTS Producto(
 id_producto int not null primary key auto_increment,
 producto varchar(50),
 precio double default 0);
 
-DROP TABLE DetalleIngrediente;
-CREATE TABLE DetalleProducto(
+CREATE TABLE IF NOT EXISTS DetalleProducto(
 id_detalleproducto int not null primary key auto_increment,
 id_ingrediente int not null,
 id_producto int not null,
 stock int,
-precio int default 0);
+precio int default 0,
+foreign key (id_ingrediente) references Ingrediente(id_ingrediente),
+foreign key (id_producto) references Producto(id_producto));
 
-DROP TABLE DetallePedido;
-CREATE TABLE DetallePedido(
+CREATE TABLE IF NOT EXISTS DetallePedido(
 id_detallepedido int not null primary key auto_increment,
 id_pedido int not null,
 id_producto int not null,
