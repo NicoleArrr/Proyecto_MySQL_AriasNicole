@@ -28,7 +28,7 @@ id_cliente int not null,
 id_empleado int not null,
 fecha datetime,
 entrega enum ('tienda', 'domicilio'),
-estado enum ('pendiente','en proceso','rechazado'),
+estado enum ('pendiente','en proceso','finalizado'),
 foreign key (id_cliente) references Cliente(id_cliente),
 foreign key (id_empleado) references Empleado(id_empleado));
 
@@ -57,8 +57,9 @@ CREATE TABLE IF NOT EXISTS Domicilio(
 id_domicilio int not null primary key auto_increment,
 id_repartidor int not null,
 id_pedido int not null,
+hora_salida timestamp,
+hora_llegada timestamp,
 costo double not null,
-fecha timestamp,
 foreign key (id_repartidor) references Repartidor(id_repartidor),
 foreign key (id_pedido) references Pedido(id_pedido));
 
