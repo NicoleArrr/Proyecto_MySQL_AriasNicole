@@ -31,12 +31,11 @@ END $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE nuevo_pedido(IN v_id_cliente INT, IN v_id_empleado INT, IN v_tipo_entrega ENUM('tienda', 'domicilio'))
+CREATE PROCEDURE nuevo_pedido(IN v_id_cliente INT, IN v_id_empleado INT, IN v_entrega ENUM('tienda', 'domicilio'))
 BEGIN
     INSERT INTO Pedido(id_cliente, id_empleado, fecha, entrega, estado)
-    VALUES ( v_id_cliente, v_id_empleado, NOW(), v_tipo_entrega, 'pendiente');
+    VALUES ( v_id_cliente, v_id_empleado, NOW(), v_entrega, 'pendiente');
 END $$
 DELIMITER ;
-
 
 ----
