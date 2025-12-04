@@ -17,8 +17,9 @@ BEGIN
 END $$
 DELIMITER ;
 
+--Identificación de clientes con más de cinco pedidos realizados en el mes--
 DELIMITER $$
-CREATE PROCEDURE clientes_frecuentes();
+CREATE PROCEDURE clientes_frecuentes()
 BEGIN
     SELECT * 
     FROM Pedido ped 
@@ -28,3 +29,14 @@ BEGIN
     GROUP BY ped.id_cliente HAVING COUNT(ped.id_cliente)>5;
 END $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE nuevo_pedido(IN v_id_cliente INT, IN v_id_empleado INT, IN v_tipo_entrega ENUM('tienda', 'domicilio'))
+BEGIN
+    INSERT INTO Pedido(id_cliente, id_empleado, fecha, entrega, estado)
+    VALUES ( v_id_cliente, v_id_empleado, NOW(), v_tipo_entrega, 'pendiente');
+END $$
+DELIMITER ;
+
+
+----
