@@ -30,12 +30,40 @@ BEGIN
 END $$
 DELIMITER ;
 
+--Control de ingredientes disponibles--
+DELIMITER $$
+CREATE PROCEDURE producto_disponible(
+    IN v_id_producto INT,
+    IN v_cantidad_producto INT,
+    OUT p_disponible BOOLEAN)    
+BEGIN
+    DECLARE v_ingredientes INT;
+
+    /*Se hace un conteo de los ingredientes para saber si se cuenta con la cantidad
+    necesaria contenida en la existencia del producto*/
+    SELECT COUNT(*) INTO v_ingredientes
+    FROM DetalleProducto dp
+    LEFT JOIN Ingrediente i ON dp.id_ingrediente = i.id_ingrediente
+    WHERE dp.id_producto = v_id_producto AND dp.stock < (i.cantidad * v_cantidad_producto);
+    
+    IF v_ingredientes = 0 THEN
+        SET p_disponible = TRUE;
+        signal sqlstate '45000' set message_text='producto disponible, insumos suficientes';
+    ELSE IF v_ingredientes <= 5 THEN
+        SET p_disponible = TRUE;
+        signal sqlstate '45000' set message_text ='producto limitado, insumos por agotarse';
+    ELSE
+        SET p_disponible = FALSE;
+        signal sqlstate '45000' set message_text='producto no disponible, insumos agotados';
+    END IF;
+END $$
+DELIMITER ;
+
+--Registro del pedido
 DELIMITER $$
 CREATE PROCEDURE nuevo_pedido(IN v_id_cliente INT, IN v_id_empleado INT, IN v_entrega ENUM('tienda', 'domicilio'))
 BEGIN
     INSERT INTO Pedido(id_cliente, id_empleado, fecha, entrega, estado)
-    VALUES ( v_id_cliente, v_id_empleado, NOW(), v_entrega, 'pendiente');
+    VALUES (v_id_cliente, v_id_empleado, NOW(), v_entrega, 'pendiente');
 END $$
 DELIMITER ;
-
-----
