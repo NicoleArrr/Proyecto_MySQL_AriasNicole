@@ -41,17 +41,16 @@ foreign key (id_empleado) references Empleado(id_empleado));
  total_pago double not null,
  foreign key (id_pedido) references Pedido(id_pedido));
 
-CREATE TABLE IF NOT EXISTS Repartidor(
-id_repartidor int not null auto_increment primary key,
-id_persona int not null,
-zona varchar(50)not null,
-disponibilidad enum ('NO','SI'),
-foreign key (id_persona) references Persona(id_persona));
-
 CREATE TABLE IF NOT EXISTS Zona(
 id_zona int not null primary key auto_increment,
-id_repartidor int not null,
-foreign key (id_repartidor) references Repartidor(id_repartidor));
+zona varchar(50)not null);
+
+CREATE TABLE IF NOT EXISTS Repartidor( 
+id_repartidor int not null auto_increment primary key,
+id_persona int not null, id_zona int not null,
+disponibilidad enum ('NO','SI'),
+foreign key (id_persona) references Persona(id_persona),
+foreign key (id_zona) references Zona(id_zona));
 
 CREATE TABLE IF NOT EXISTS Domicilio(
 id_domicilio int not null primary key auto_increment,
